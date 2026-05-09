@@ -19,6 +19,7 @@ COPY requirements_flaskapp.txt /app/
 
 # TODO: Install Python dependencies
 RUN pip install -r requirements_flaskapp.txt
+RUN pip install markupsafe==2.0.1 jinja2==2.11.3
 
 # TODO: Expose the required port
 EXPOSE 5000
