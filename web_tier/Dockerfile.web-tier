@@ -11,3 +11,8 @@
 # TODO: Expose the required ports
 
 # TODO: Specify the default command to run Envoy
+FROM envoyproxy/envoy:v1.27-latest
+
+COPY web_tier_envoy.yaml /etc/envoy/envoy.yaml
+
+CMD ["/usr/local/bin/envoy", "-c", "/etc/envoy/envoy.yaml"]

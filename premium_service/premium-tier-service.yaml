@@ -4,3 +4,15 @@
 # Students may use this as a base for exposing their application within the cluster.
 #
 # TODO: Fill in the Kubernetes Service spec here.
+apiVersion: v1
+kind: Service
+metadata:
+  name: premium-tier-service
+  namespace: premium-service
+spec:
+  selector:
+    app: premium-tier-app
+  ports:
+  - protocol: TCP
+    port: 5000
+    targetPort: 5000

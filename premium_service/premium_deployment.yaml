@@ -4,3 +4,23 @@
 # in the 'premium-service' namespace. 
 #
 # TODO: Fill in the Kubernetes Deployment spec here.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: premium-tier-app
+  namespace: premium-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: premium-tier-app
+  template:
+    metadata:
+      labels:
+        app: premium-tier-app
+    spec:
+      containers:
+      - name: premium-tier-app
+        image: mohassan99/premium-tier-app:latest
+        ports:
+        - containerPort: 5000

@@ -4,3 +4,37 @@
 # Students may use this as a base for deploying their web-tier and exposing it via a LoadBalancer.
 #
 # TODO: Fill in the Kubernetes Deployment and Service spec here.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-tier
+  namespace: web-tier
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: web-tier
+  template:
+    metadata:
+      labels:
+        app: web-tier
+    spec:
+      containers:
+      - name: web-tier
+        image: mohassan99/web-tier:latest
+        ports:
+        - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: web-tier-service
+  namespace: web-tier
+spec:
+  type: LoadBalancer
+  selector:
+    app: web-tier
+  ports:
+  - protocol: TCP
+    port: 8080
+    targetPort: 8080
