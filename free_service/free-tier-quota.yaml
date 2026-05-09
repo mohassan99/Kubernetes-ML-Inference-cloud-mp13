@@ -1,2 +1,12 @@
 # This YAML efines a ResourceQuota for the free-tier namespace.
 # TO DO: Limit the number of pods and CPU resources that can be used in the free-service namespace as per the assignment instructions.
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: free-tier-quota
+  namespace: free-service
+spec:
+  hard:
+    pods: "2"
+    requests.cpu: "2"
+    limits.cpu: "2"
