@@ -25,7 +25,8 @@ RUN pip install -r /app/requirements.txt
 
 # TODO: Create directories for models and data
 RUN mkdir -p /app/models /app/data
-
+COPY premium_service/job/KMNIST/ /app/data/KMNIST/raw/
+RUN cd /app/data/KMNIST/raw && gunzip -k *.gz
 # TODO: Preload data and pretrain models
 ENV DATASET=kmnist
 ENV TYPE=cnn
