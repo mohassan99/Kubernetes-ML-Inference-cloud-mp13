@@ -58,3 +58,8 @@ spec:
         image: mohassan99/free-tier-app:latest
         ports:
         - containerPort: 5000
+        resources:
+          requests:
+            cpu: "500m"
+          limits:
+            cpu: "500m"
