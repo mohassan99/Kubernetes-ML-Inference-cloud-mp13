@@ -25,39 +25,23 @@ static_resources:
               domains: ["*"]
               routes:
               - match:
-                  prefix: "/free"
+                  prefix: "/"
                 route:
-                  cluster: free_service
-              - match:
-                  prefix: "/premium"
-                route:
-                  cluster: premium_service
+                  cluster: flask_service
           http_filters:
           - name: envoy.filters.http.router
             typed_config:
               "@type": type.googleapis.com/envoy.extensions.filters.http.router.v3.Router
   clusters:
-  - name: free_service
+  - name: flask_service
     connect_timeout: 0.25s
-    type: STRICT_DNS
+    type: STATIC
     load_assignment:
-      cluster_name: free_service
+      cluster_name: flask_service
       endpoints:
       - lb_endpoints:
         - endpoint:
             address:
               socket_address:
-                address: free-tier-service.free-service.svc.cluster.local
-                port_value: 5000
-  - name: premium_service
-    connect_timeout: 0.25s
-    type: STRICT_DNS
-    load_assignment:
-      cluster_name: premium_service
-      endpoints:
-      - lb_endpoints:
-        - endpoint:
-            address:
-              socket_address:
-                address: premium-tier-service.premium-service.svc.cluster.local
+                address: 127.0.0.1
                 port_value: 5000

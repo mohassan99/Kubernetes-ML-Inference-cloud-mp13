@@ -4,6 +4,39 @@
 # in the 'free-service' namespace. 
 #
 # TODO: Fill in the Kubernetes Deployment spec here.
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: free-tier-sa
+  namespace: free-service
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: free-tier-job-role
+  namespace: free-service
+rules:
+- apiGroups: ["batch"]
+  resources: ["jobs"]
+  verbs: ["create", "get", "list", "watch"]
+- apiGroups: [""]
+  resources: ["pods", "pods/log"]
+  verbs: ["get", "list", "watch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: free-tier-job-rolebinding
+  namespace: free-service
+subjects:
+- kind: ServiceAccount
+  name: free-tier-sa
+  namespace: free-service
+roleRef:
+  kind: Role
+  name: free-tier-job-role
+  apiGroup: rbac.authorization.k8s.io
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -19,6 +52,7 @@ spec:
       labels:
         app: free-tier-app
     spec:
+      serviceAccountName: free-tier-sa
       containers:
       - name: free-tier-app
         image: mohassan99/free-tier-app:latest

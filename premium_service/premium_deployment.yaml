@@ -4,6 +4,39 @@
 # in the 'premium-service' namespace. 
 #
 # TODO: Fill in the Kubernetes Deployment spec here.
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: premium-tier-sa
+  namespace: premium-service
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: premium-tier-job-role
+  namespace: premium-service
+rules:
+- apiGroups: ["batch"]
+  resources: ["jobs"]
+  verbs: ["create", "get", "list", "watch"]
+- apiGroups: [""]
+  resources: ["pods", "pods/log"]
+  verbs: ["get", "list", "watch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: premium-tier-job-rolebinding
+  namespace: premium-service
+subjects:
+- kind: ServiceAccount
+  name: premium-tier-sa
+  namespace: premium-service
+roleRef:
+  kind: Role
+  name: premium-tier-job-role
+  apiGroup: rbac.authorization.k8s.io
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -19,6 +52,7 @@ spec:
       labels:
         app: premium-tier-app
     spec:
+      serviceAccountName: premium-tier-sa
       containers:
       - name: premium-tier-app
         image: mohassan99/premium-tier-app:latest

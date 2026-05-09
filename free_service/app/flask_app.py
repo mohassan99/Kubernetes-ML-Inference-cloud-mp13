@@ -1,49 +1,58 @@
 """
 Free Tier Flask API service.
+
+This module provides a minimal Flask application that exposes an endpoint to launch
+Kubernetes jobs in the 'free-service' namespace.
+
+Students should extend this code to add additional endpoints, error handling,
+or business logic as required by the assignment.
 """
+
 from kubernetes import client, config
 from flask import Flask, request, jsonify
 import yaml
 import uuid
 
+# Load Kubernetes configuration 
 try:
-    config.load_incluster_config()
+    config.load_incluster_config() 
 except config.config_exception.ConfigException:
-    config.load_kube_config()
+    config.load_kube_config()  
 
+# Initialize Flask app
 v1 = client.CoreV1Api()
-batch_v1 = client.BatchV1Api()
 app = Flask(__name__)
 
+# TODO: Define a POST endpoint that:
+#   - Parses the incoming JSON for the 'dataset' parameter
+#   - Loads the job YAML template
+#   - Injects the dataset value into the job spec
+#   - Generates a unique job name
+#   - Submits the job to the Kubernetes cluster
+#   - Returns a success or error response
 @app.route('/free', methods=['POST'])
 def post_free():
-    data = request.get_json()
-    dataset = data.get('dataset', 'mnist')
+    try:
+        data = request.get_json()
+        dataset = data.get('dataset', 'mnist') if data else 'mnist'
 
-    with open('free-tier-job.yaml', 'r') as f:
-        job_spec = yaml.safe_load(f)
+        with open('/app/free-tier-job.yaml', 'r') as f:
+            job_spec = yaml.safe_load(f)
 
-    job_name = f"free-job-{uuid.uuid4().hex[:8]}"
-    job_spec['metadata']['name'] = job_name
+        job_name = f"free-job-template-{uuid.uuid4().hex[:8]}"
+        job_spec['metadata']['name'] = job_name
 
-    for env in job_spec['spec']['template']['spec']['containers'][0]['env']:
-        if env['name'] == 'DATASET':
-            env['value'] = dataset
+        for env_var in job_spec['spec']['template']['spec']['containers'][0]['env']:
+            if env_var['name'] == 'DATASET':
+                env_var['value'] = dataset
 
-    batch_v1.create_namespaced_job(namespace='free-service', body=job_spec)
+        batch_v1 = client.BatchV1Api()
+        batch_v1.create_namespaced_job(namespace='free-service', body=job_spec)
 
-    return jsonify({'job_name': job_name, 'status': 'submitted'}), 200
+        return jsonify({'job_name': job_name, 'status': 'submitted'}), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
-@app.route('/free/resource-quota', methods=['GET'])
-def get_resource_quota():
-    quotas = v1.list_namespaced_resource_quota(namespace='free-service')
-    result = []
-    for quota in quotas.items:
-        result.append({
-            'name': quota.metadata.name,
-            'hard': quota.status.hard
-        })
-    return jsonify(result), 200
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=5000)

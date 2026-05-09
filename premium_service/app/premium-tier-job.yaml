@@ -1,7 +1,12 @@
+#
+# This YAML defines a template for launching a batch job in the 'premium-service' namespace.
+# The job runs a container that performs a classification task.
+#
+# TODO: Fill in the Kubernetes Job spec here.
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: JOB_NAME
+  name: premium-job-template
   namespace: premium-service
 spec:
   template:

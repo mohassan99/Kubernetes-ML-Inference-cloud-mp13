@@ -5,14 +5,13 @@
 #
 
 # TODO: Specify the Envoy base image
-
-# TODO: Copy the Envoy configuration file into the image
-
-# TODO: Expose the required ports
-
-# TODO: Specify the default command to run Envoy
 FROM envoyproxy/envoy:v1.27-latest
 
+# TODO: Copy the Envoy configuration file into the image
 COPY web_tier_envoy.yaml /etc/envoy/envoy.yaml
 
+# TODO: Expose the required ports
+EXPOSE 8080
+
+# TODO: Specify the default command to run Envoy
 CMD ["/usr/local/bin/envoy", "-c", "/etc/envoy/envoy.yaml"]
