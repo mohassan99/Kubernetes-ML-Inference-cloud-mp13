@@ -1,0 +1,13 @@
+FROM python:3.9
+
+WORKDIR /app
+
+COPY flask_app.py /app/
+COPY premium-tier-job.yaml /app/
+COPY requirements_flaskapp.txt /app/
+
+RUN pip install -r requirements_flaskapp.txt
+
+EXPOSE 5000
+
+CMD ["python3", "flask_app.py"]

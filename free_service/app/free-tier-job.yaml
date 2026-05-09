@@ -8,7 +8,7 @@ spec:
     spec:
       containers:
       - name: free-tier-job
-        image: mohassan99/free-tier-job:latest
+        image: DOCKERHUB_USERNAME/free-tier-job:latest
         env:
         - name: DATASET
           value: "mnist"

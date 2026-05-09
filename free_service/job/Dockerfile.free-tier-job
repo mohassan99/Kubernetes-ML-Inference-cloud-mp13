@@ -1,0 +1,22 @@
+FROM python:3.6
+
+WORKDIR /app
+
+COPY model_config/requirements.txt /app/
+COPY model_config/classify.py /app/
+COPY model_config/data_preload.py /app/
+COPY model_config/train.py /app/
+COPY model_config/utils.py /app/
+COPY model_config/models.py /app/
+
+RUN pip install -r requirements.txt
+
+RUN mkdir -p /app/models /app/data
+
+ENV DATASET=mnist
+ENV TYPE=ff
+
+RUN python data_preload.py
+RUN python train.py
+
+CMD ["python", "classify.py"]
