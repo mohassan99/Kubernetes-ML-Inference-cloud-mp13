@@ -4,10 +4,10 @@ import json
 url = "https://5t72crzbtelmzcnqp36yt5i2cm0tygzs.lambda-url.us-east-1.on.aws/"
 
 payload = {
-    "submitterEmail": '<YOUR_EMAIL@illinois.edu>',  # Your Coursera-registered email
-    "secret": '<YOUR_COURSERA_SECRET_TOKEN>',       # Your Coursera assignment token (valid for 30 mins)
-    "lbaddress": 'http://<LB_DNS>.us-east-1.elb.amazonaws.com', # LB External IP 
-    "ipaddress": 'http://<EC2_IP>:5000',            # EC2 public IPv4 and port (running grader_interface.py) 
+    "submitterEmail": 'mh57@illinois.edu',  # Your Coursera-registered email
+    "secret": 'Djsrso7TqZeiJqOQ',       # Your Coursera assignment token (valid for 30 mins)
+    "lbaddress": 'http://af6599b3587494bc4847890ac8bba8f5-568580554.us-east-1.elb.amazonaws.com', # LB External IP 
+    "ipaddress": 'http://172.31.19.43:5000',            # EC2 public IPv4 and port (running grader_interface.py) 
 }
 
 print("\n========== MP Two-Tier Microservice Architecture Submission ==========")
