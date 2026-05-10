@@ -1,17 +1,21 @@
 # Two-Tier ML Inference on Kubernetes (AWS EKS)
 
-Production-style microservice architecture deploying ML image-classification models behind a single load-balanced API on AWS EKS. A free tier (feedforward NN, MNIST) and premium tier (CNN, KMNIST) are isolated by Kubernetes namespaces with per-tier resource quotas, fronted by an Envoy reverse proxy.
+Microservice architecture deploying ML image-classification models behind a single load-balanced API on AWS EKS. A free tier (feedforward NN, MNIST) and premium tier (CNN, KMNIST) are isolated by Kubernetes namespaces with per-tier resource quotas, fronted by an Envoy traffic router.
 
 Built for CS 498 Cloud Computing Applications (UIUC, MCS).
 
 ## Architecture
 
-![Architecture](docs/architecture.svg)
+![Architecture](docs/architecture.png)
+
+### How traffic flows
+
+A request from the internet hits the AWS Load Balancer, which forwards it to Envoy. Envoy reads the URL and decides where to send it: `/free` goes to the free-tier Flask app, `/premium` goes to the premium-tier Flask app. The Flask app then creates a Kubernetes Job that runs the actual ML inference (one Job per request) and returns the job name. Envoy is a traffic router commonly used in Kubernetes systems; nginx could play the same role.
 
 ## Stack
 - **Orchestration:** Amazon EKS, kubectl, eksctl
 - **Container runtime:** Docker, DockerHub registry
-- **Reverse proxy / routing:** Envoy
+- **Traffic routing:** Envoy
 - **Application:** Python 3.9, Flask, PyTorch
 - **Infrastructure:** AWS Network Load Balancer, EC2 (t3.medium nodes)
 - **Datasets:** MNIST, KMNIST
@@ -19,7 +23,7 @@ Built for CS 498 Cloud Computing Applications (UIUC, MCS).
 ## Key engineering decisions
 - **Namespace isolation** with per-namespace `ResourceQuota` (free tier capped at 2 CPU / 2 pods) demonstrates multi-tenant resource governance.
 - **Job-based inference** (one-shot Kubernetes Jobs vs long-running services) matches the bursty, stateless nature of inference workloads and lets the platform garbage-collect compute after each request.
-- **Envoy at the edge** routes by path prefix (`/free`, `/premium`) to per-tier Services — single public entry point, internal traffic stays in-cluster.
+- **Envoy at the edge** routes by URL path (`/free`, `/premium`) to the right Flask service — single public entry point, internal traffic stays in-cluster.
 - **External LoadBalancer Service** maps port 80 → container 8080 (non-root Envoy listener), following standard HTTP conventions for the public surface while respecting Linux's privileged-port rules inside containers.
 - **Service accounts with RBAC** scoped to each namespace let the Flask apps create Jobs without granting cluster-wide privileges.
 
