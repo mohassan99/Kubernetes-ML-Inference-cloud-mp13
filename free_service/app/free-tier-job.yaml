@@ -19,5 +19,10 @@ spec:
           value: "mnist"
         - name: TYPE
           value: "ff"
+        resources:
+          requests:
+            cpu: "500m"
+          limits:
+            cpu: "500m"
       restartPolicy: Never
   backoffLimit: 0
